@@ -3,6 +3,8 @@ import { WORDS, KEYBOARD_LETTERS } from "./consts";
 const gameDiv = document.getElementById("game");
 const logoH1 = document.getElementById("logo");
 
+let triesLeft;
+
 const createPlaceholdersHTML = () => {
   const word = sessionStorage.getItem("word");
 
@@ -41,7 +43,29 @@ const createHangmanImg = () => {
   return image;
 };
 
+const checkLetter = (letter) => {
+    const word = sessionStorage.getItem('word')
+    const inputLetter = letter.toLowerCase()
+
+    if(!word.includes(inputLetter)) {
+        const triesCounter = document.getElementById('tries-left')
+        triesLeft = triesLeft - 1
+        triesCounter.innerText = triesLeft;
+
+        const hangmanImg = document.getElementById('hangman-img')
+        hangmanImg.src = `images/hg-${10-triesLeft}.png`;
+    } else {
+        const wordArray = Array.from(word)
+        wordArray.forEach((currentLetter, i) => {
+            if (currentLetter == inputLetter) {
+                document.getElementById(`letter_${i}`).innerText = inputLetter.toUpperCase()
+            }
+        })
+    }
+}
+
 export const startGame = () => {
+    triesLeft = 10;
   logoH1.classList.add("logo-sm");
   const randomIndex = Math.floor(Math.random() * WORDS.length);
   const wordToGuess = WORDS[randomIndex];
@@ -54,7 +78,10 @@ export const startGame = () => {
 
   const keyboardDiv = createKeyboard();
   keyboardDiv.addEventListener("click", (event) => {
-    console.log(event.target.id);
+    if(event.target.tagName.toLowerCase() === 'button') {
+        event.target.disabled = true;
+        checkLetter(event.target.id)
+    }
   });
 
   const hangmanImg = createHangmanImg();
