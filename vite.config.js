@@ -1,3 +1,3 @@
 export default {
-    base: '/vite_hangman',
+    base: '/hangman-game/',
 }
